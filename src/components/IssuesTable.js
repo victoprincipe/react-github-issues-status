@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import 'semantic-ui-css/semantic.min.css';
+import ThemeToggleButton from './ThemeToggleButton';
 import {
   Table,
   List,
@@ -9,38 +9,34 @@ import {
   Button,
 } from 'semantic-ui-react';
 
-let toggleButtonStyle = {
-  position: 'fixed',
-  bottom: '30px',
-  left: '95%',
-  transform: 'translateX(-50%)',
-  opacity: 0.6,
-};
-
 function IssuesTable() {
   const [issuesData, setIssuesData] = useState('loading');
   const [toggleTheme, setToggleTheme] = useState(true);
 
   useEffect(() => {
     fetch('https://api.github.com/repos/facebook/react/issues')
-      .then((resp) => resp.json()) // Transform the data into json
+      .then((resp) => {
+        if (resp.ok) {
+          return resp.json();
+        } else {
+          return 'error';
+        }
+      })
       .then(function (data) {
         setTimeout(() => {
-          setIssuesData([...data]);
+          setIssuesData(data !== 'error' ? [...data] : 'error');
         }, 1000);
+      })
+      .catch((err) => {
+        console.error(err);
+        setIssuesData('error');
       });
   }, []);
 
-  const TableData = (data) => {
+  const renderTableData = (data) => {
     return data.map((d) => {
       return (
-        <Table.Row
-          key={d.id}
-          onClick={() => {
-            window.location.href = d.html_url;
-          }}
-          style={{ cursor: 'pointer' }}
-        >
+        <Table.Row key={d.id}>
           <Table.Cell key={d.id + d.number}>{d.number}</Table.Cell>
           <Popup
             key={d.id + d.title}
@@ -62,7 +58,7 @@ function IssuesTable() {
             {new Date(d.updated_at).toLocaleString()}
           </Table.Cell>
           <Table.Cell>
-            <List>{Labels(d.labels)}</List>
+            <List>{renderLabels(d.labels)}</List>
           </Table.Cell>
           <Table.Cell>{d.state}</Table.Cell>
         </Table.Row>
@@ -70,7 +66,7 @@ function IssuesTable() {
     });
   };
 
-  const TablePlaceholder = (num) => {
+  const renderTablePlaceholder = (num) => {
     const placeholders = [];
     const placeholderCells = [];
 
@@ -91,7 +87,7 @@ function IssuesTable() {
     return placeholders;
   };
 
-  const Labels = (lab) => {
+  const renderLabels = (lab) => {
     return lab.map((l) => {
       return (
         <List.Item key={l.id}>
@@ -103,24 +99,14 @@ function IssuesTable() {
     });
   };
 
-  const toggleThemeButton = () => {
-    return (
-      <Button
-        inverted={!toggleTheme}
-        circular
-        style={toggleButtonStyle}
-        size='massive'
-        onClick={() => {
-          setToggleTheme(!toggleTheme);
-        }}
-        icon={toggleTheme ? 'lightbulb outline' : 'lightbulb'}
-      />
-    );
-  };
-
   return (
     <>
-      {toggleThemeButton()}
+      <ThemeToggleButton
+        toggleTheme={toggleTheme}
+        action={() => {
+          setToggleTheme(!toggleTheme);
+        }}
+      />
       <Table
         celled
         striped
@@ -135,14 +121,14 @@ function IssuesTable() {
             <Table.HeaderCell>Title</Table.HeaderCell>
             <Table.HeaderCell>Created At</Table.HeaderCell>
             <Table.HeaderCell>Updated At</Table.HeaderCell>
-            <Table.HeaderCell>Labels</Table.HeaderCell>
+            <Table.HeaderCell>renderLabels</Table.HeaderCell>
             <Table.HeaderCell>State</Table.HeaderCell>
           </Table.Row>
         </Table.Header>
         <Table.Body>
           {issuesData !== 'loading'
-            ? TableData(issuesData)
-            : TablePlaceholder(15)}
+            ? renderTableData(issuesData)
+            : renderTablePlaceholder(15)}
         </Table.Body>
       </Table>
     </>
