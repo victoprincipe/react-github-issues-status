@@ -1,9 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import 'semantic-ui-css/semantic.min.css';
-import { Table, List, Label, Placeholder, Popup } from 'semantic-ui-react';
+import {
+  Table,
+  List,
+  Label,
+  Placeholder,
+  Popup,
+  Button,
+} from 'semantic-ui-react';
+
+let toggleButtonStyle = {
+  position: 'fixed',
+  bottom: '30px',
+  left: '95%',
+  transform: 'translateX(-50%)',
+  opacity: 0.6,
+};
 
 function IssuesTable() {
   const [issuesData, setIssuesData] = useState('loading');
+  const [toggleTheme, setToggleTheme] = useState(true);
 
   useEffect(() => {
     fetch('https://api.github.com/repos/facebook/react/issues')
@@ -61,7 +77,7 @@ function IssuesTable() {
     for (let i = 0; i < 6; i++) {
       placeholderCells.push(
         <Table.Cell key={i}>
-          <Placeholder>
+          <Placeholder inverted={!toggleTheme}>
             <Placeholder.Line />
           </Placeholder>
         </Table.Cell>
@@ -87,24 +103,42 @@ function IssuesTable() {
     });
   };
 
+  const toggleThemeButton = () => {
+    return (
+      <Button
+        inverted={!toggleTheme}
+        circular
+        style={toggleButtonStyle}
+        size='massive'
+        onClick={() => {
+          setToggleTheme(!toggleTheme);
+        }}
+        icon={toggleTheme ? 'lightbulb outline' : 'lightbulb'}
+      />
+    );
+  };
+
   return (
-    <Table celled striped selectable sortable>
-      <Table.Header>
-        <Table.Row>
-          <Table.HeaderCell>Issue Number</Table.HeaderCell>
-          <Table.HeaderCell>Title</Table.HeaderCell>
-          <Table.HeaderCell>Created At</Table.HeaderCell>
-          <Table.HeaderCell>Updated At</Table.HeaderCell>
-          <Table.HeaderCell>Labels</Table.HeaderCell>
-          <Table.HeaderCell>State</Table.HeaderCell>
-        </Table.Row>
-      </Table.Header>
-      <Table.Body>
-        {issuesData !== 'loading'
-          ? TableData(issuesData)
-          : TablePlaceholder(15)}
-      </Table.Body>
-    </Table>
+    <>
+      {toggleThemeButton()}
+      <Table celled striped selectable sortable inverted={!toggleTheme}>
+        <Table.Header>
+          <Table.Row>
+            <Table.HeaderCell>Issue Number</Table.HeaderCell>
+            <Table.HeaderCell>Title</Table.HeaderCell>
+            <Table.HeaderCell>Created At</Table.HeaderCell>
+            <Table.HeaderCell>Updated At</Table.HeaderCell>
+            <Table.HeaderCell>Labels</Table.HeaderCell>
+            <Table.HeaderCell>State</Table.HeaderCell>
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
+          {issuesData !== 'loading'
+            ? TableData(issuesData)
+            : TablePlaceholder(15)}
+        </Table.Body>
+      </Table>
+    </>
   );
 }
 
