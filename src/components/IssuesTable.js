@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import ThemeToggleButton from './ThemeToggleButton';
 import { Table, List, Label, Placeholder, Popup } from 'semantic-ui-react';
 
-function IssuesTable() {
+function IssuesTable(props) {
   const [issuesData, setIssuesData] = useState('loading');
   const [toggleTheme, setToggleTheme] = useState(true);
 
   useEffect(() => {
-    fetch('https://api.github.com/repos/facebook/react/issues')
+    let unmounted = false;
+    fetch(props.url || 'https://api.github.com/repos/facebook/react/issues')
       .then((resp) => {
         if (resp.ok) {
           return resp.json();
@@ -16,14 +17,17 @@ function IssuesTable() {
         }
       })
       .then(function (data) {
-        setTimeout(() => {
-          setIssuesData(data);
-        }, 1000);
+        if (!unmounted) {
+          setTimeout(() => {
+            setIssuesData(data);
+          }, 1000);
+        }
       })
       .catch((err) => {
         console.error(err);
         setIssuesData('error');
       });
+    return () => (unmounted = true);
   }, []);
 
   const renderTableData = (data) => {
