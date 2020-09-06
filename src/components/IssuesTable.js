@@ -119,7 +119,7 @@ function IssuesTable(props) {
           <Table.Body>
             {issuesData !== 'loading'
               ? renderTableData(issuesData)
-              : renderTablePlaceholder(15)}
+              : renderTablePlaceholder(20)}
           </Table.Body>
         </Table>
       );
