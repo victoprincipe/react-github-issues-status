@@ -121,7 +121,14 @@ function IssuesTable() {
   return (
     <>
       {toggleThemeButton()}
-      <Table celled striped selectable sortable inverted={!toggleTheme}>
+      <Table
+        celled
+        striped
+        selectable
+        sortable
+        inverted={!toggleTheme}
+        style={{ margin: 0, transition: 'all 0.6s' }}
+      >
         <Table.Header>
           <Table.Row>
             <Table.HeaderCell>Issue Number</Table.HeaderCell>
