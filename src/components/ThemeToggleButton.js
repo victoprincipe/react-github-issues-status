@@ -12,6 +12,7 @@ let toggleButtonStyle = {
 function ToggleThemeButton(props) {
   return (
     <Button
+      data-testid='toggle-button'
       inverted={!props.toggleTheme}
       circular
       style={toggleButtonStyle}

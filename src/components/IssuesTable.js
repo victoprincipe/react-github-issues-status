@@ -99,7 +99,6 @@ function IssuesTable() {
           celled
           striped
           selectable
-          sortable
           inverted={!toggleTheme}
           style={{ margin: 0, transition: 'all 0.6s' }}
         >
@@ -109,7 +108,7 @@ function IssuesTable() {
               <Table.HeaderCell>Title</Table.HeaderCell>
               <Table.HeaderCell>Created At</Table.HeaderCell>
               <Table.HeaderCell>Updated At</Table.HeaderCell>
-              <Table.HeaderCell>renderLabels</Table.HeaderCell>
+              <Table.HeaderCell>Labels</Table.HeaderCell>
               <Table.HeaderCell>State</Table.HeaderCell>
             </Table.Row>
           </Table.Header>
