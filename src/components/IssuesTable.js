@@ -1,13 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ThemeToggleButton from './ThemeToggleButton';
-import {
-  Table,
-  List,
-  Label,
-  Placeholder,
-  Popup,
-  Button,
-} from 'semantic-ui-react';
+import { Table, List, Label, Placeholder, Popup } from 'semantic-ui-react';
 
 function IssuesTable() {
   const [issuesData, setIssuesData] = useState('loading');
@@ -24,7 +17,7 @@ function IssuesTable() {
       })
       .then(function (data) {
         setTimeout(() => {
-          setIssuesData(data !== 'error' ? [...data] : 'error');
+          setIssuesData(data);
         }, 1000);
       })
       .catch((err) => {
@@ -99,6 +92,57 @@ function IssuesTable() {
     });
   };
 
+  const renderTable = () => {
+    if (issuesData !== 'error') {
+      return (
+        <Table
+          celled
+          striped
+          selectable
+          sortable
+          inverted={!toggleTheme}
+          style={{ margin: 0, transition: 'all 0.6s' }}
+        >
+          <Table.Header>
+            <Table.Row>
+              <Table.HeaderCell>Issue Number</Table.HeaderCell>
+              <Table.HeaderCell>Title</Table.HeaderCell>
+              <Table.HeaderCell>Created At</Table.HeaderCell>
+              <Table.HeaderCell>Updated At</Table.HeaderCell>
+              <Table.HeaderCell>renderLabels</Table.HeaderCell>
+              <Table.HeaderCell>State</Table.HeaderCell>
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
+            {issuesData !== 'loading'
+              ? renderTableData(issuesData)
+              : renderTablePlaceholder(15)}
+          </Table.Body>
+        </Table>
+      );
+    }
+
+    return (
+      <Table
+        striped
+        selectable
+        inverted={!toggleTheme}
+        style={{ margin: 0, transition: 'all 0.6s' }}
+      >
+        <Table.Header>
+          <Table.Row>
+            <Table.HeaderCell textAlign='center'>Info</Table.HeaderCell>
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
+          <Table.Row negative>
+            <Table.Cell textAlign='center'>Error fetching API data!</Table.Cell>
+          </Table.Row>
+        </Table.Body>
+      </Table>
+    );
+  };
+
   return (
     <>
       <ThemeToggleButton
@@ -107,30 +151,7 @@ function IssuesTable() {
           setToggleTheme(!toggleTheme);
         }}
       />
-      <Table
-        celled
-        striped
-        selectable
-        sortable
-        inverted={!toggleTheme}
-        style={{ margin: 0, transition: 'all 0.6s' }}
-      >
-        <Table.Header>
-          <Table.Row>
-            <Table.HeaderCell>Issue Number</Table.HeaderCell>
-            <Table.HeaderCell>Title</Table.HeaderCell>
-            <Table.HeaderCell>Created At</Table.HeaderCell>
-            <Table.HeaderCell>Updated At</Table.HeaderCell>
-            <Table.HeaderCell>renderLabels</Table.HeaderCell>
-            <Table.HeaderCell>State</Table.HeaderCell>
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
-          {issuesData !== 'loading'
-            ? renderTableData(issuesData)
-            : renderTablePlaceholder(15)}
-        </Table.Body>
-      </Table>
+      {renderTable()}
     </>
   );
 }
